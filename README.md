@@ -38,12 +38,10 @@ O projeto possui os seguintes arquivos principais:
 - [text](<Script do Banco e Dados de teste>) -> script do banco de dados
 
 
-## Configuração do Banco de Dados
-
 # Como executar o projeto
 1. Abra a pasta do projeto no VS Code: ![Print1](<prints/Projeto no VSCode.png>)
-2.  ![Verifique as configurações do banco:](prints/configBanco.png)
-3. Verificar se o banco está funcionando
+2. Verifique as configurações do banco: ![Print2](prints/configDbeaver.png) ![Print3](prints/configBanco.png)
+3. Verificar se o banco está funcionando: ![Print4](prints/bancoFuncionando.png)
 4. Criar o ambiente virtual no VS Code:
     Abrir terminal e executar: python -m venv venv
 5. Instalar as dependências do projeto
@@ -52,30 +50,15 @@ O projeto possui os seguintes arquivos principais:
 6. Executar o sistema: python main.py
 7. Resultado da execução
     Ao executar o programa, o sistema irá:
-        Testar a conexão com o PostgreSQL
-        Inserir usuários
-        Criar listas personalizadas
+        Testar a conexão com o PostgreSQL: ![Print5](prints/1.png)
+        Inserir usuários: ![Print6](prints/2.png)
+        Criar listas personalizadas: ![Print7](prints/3.png)
         Executar consultas no banco
-        Exibir os resultados no terminal
+        Exibir os resultados no terminal, como já mostrado nos prints anteriores.
 8. Verificar os dados no banco
     Após executar o programa, os registros podem ser visualizados diretamente no PostgreSQL.
+    ![Print8](prints/4.png)
 
-A conexão com o banco é configurada no arquivo (database.py).
 
-```python
-DB_HOST = "localhost"
-DB_PORT = "5432"
-DB_NAME = "postgres"
-DB_USER = "postgres"
-DB_PASSWORD = "postgres123"
-
-A URL de conexão utilizada pelo SQLAlchemy é:
-1. Abra a pasta do projeto no VS Code: prints/Projeto no VSCode.png
-
-DATABASE_URL = (
-    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
-
-Observação: essas credenciais podem mudar de acordo com a máquina, sendo necessário mudar os valores.
 
 
