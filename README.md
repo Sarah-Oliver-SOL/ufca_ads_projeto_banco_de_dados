@@ -28,15 +28,14 @@ O projeto possui os seguintes arquivos principais:
 
 - [database.py](database.py) → configuração da conexão com o banco de dados PostgreSQL.
 - [`models.py`](models.py) → definição das entidades ORM e os relacionamentos entre as tabelas.
-- [`main.py`](main.py) → execução das operações CRUD e consultas
-- [`requirements.txt`](requirements.txt) → dependências do projeto  
+- [`main.py`](main.py) → execução das operações CRUD e consultas 
 - `Script do banco e dados de teste` → script SQL para criação do banco
 
 
 # ▶️ Como executar o projeto
 ## 1. Abrir o projeto no VS Code.
 
-![Print1](<prints/Projeto no VSCode.png>)
+![AbrirProjeto](image8.png)
 
 ## 2. Verificar configuração do banco
 
