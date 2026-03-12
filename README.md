@@ -58,7 +58,7 @@ DATABASE_URL = (
 Observação: essas credenciais podem mudar de acordo com a máquina, sendo necessário mudar os valores.
 
 # Como executar o projeto
-1. Abra a pasta do projeto no VS Code
+1. Abra a pasta do projeto no VS Code: prints/Projeto no VSCode.png
 2. Verifique as configurações do banco
 3. Verificar se o banco está funcionando
 4. Criar o ambiente virtual no VS Code:
