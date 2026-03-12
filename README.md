@@ -30,6 +30,7 @@ O projeto possui os seguintes arquivos principais:
 - [`models.py`](models.py) → definição das entidades ORM e os relacionamentos entre as tabelas.
 - [`main.py`](main.py) → execução das operações CRUD e consultas 
 - `Script do banco e dados de teste` → script SQL para criação do banco
+- Evidências de funcionamento: [Prints](prints)
 
 # Como configurar o banco
 A conexão com o banco PostgreSQL é configurada no arquivo `database.py`.
