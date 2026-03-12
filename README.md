@@ -35,11 +35,11 @@ O projeto possui os seguintes arquivos principais:
 A conexão com o banco PostgreSQL é configurada no arquivo `database.py`.
 
 '''python
-DB_HOST = "localhost" --> endereço do servidor do banco (localhost)
-DB_PORT = "5432" --> porta padrão do PostgreSQL (5432)
-DB_NAME = "postgres" --> banco de dados utilizado
-DB_USER = "postgres" --> usuário do PostgreSQL
-DB_PASSWORD = "postgresXXX" --> senha do PostgreSQL
+- DB_HOST = "localhost" --> endereço do servidor do banco (localhost)
+- DB_PORT = "5432" --> porta padrão do PostgreSQL (5432)
+- DB_NAME = "postgres" --> banco de dados utilizado
+- DB_USER = "postgres" --> usuário do PostgreSQL
+- DB_PASSWORD = "postgresXXX" --> senha do PostgreSQL
 
 Caso as credenciais do PostgreSQL na máquina sejam diferentes, basta alterar os valores no arquivo `database.py`.
 
