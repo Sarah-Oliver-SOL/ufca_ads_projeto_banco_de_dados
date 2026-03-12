@@ -173,7 +173,7 @@ with SessionLocal() as session:
 
 
 # ==========================================================
-# CONSULTA 4
+# CONSULTAS EXTRAS
 # agregação por relacionamento
 # ==========================================================
 with SessionLocal() as session:
