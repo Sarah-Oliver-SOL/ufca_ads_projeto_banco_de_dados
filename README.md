@@ -68,16 +68,16 @@ Ao executar o programa, o sistema irá:
 
 🔹Operações CRUD: 
 - Inserção de usuários, leitura com ordenação, Atualização de lista, Exclusão de registro
-![CRUD](image.png)
+![CRUD](prints/image.png)
         
 🔹Consultas com relacionamento entre tabelas: 
-![CONSULTAS](image-1.png)
-![CONSULTAS EXTRAS](image-2.png)
+![CONSULTAS](prints/image-1.png)
+![CONSULTAS EXTRAS](prints/image-2.png)
 
 
 ## Verificação no banco de dados
 Após executar o programa, os registros podem ser visualizados diretamente no PostgreSQL.
-    ![vERIFICAÇÃO NO BANCO](image-3.png)
+    ![VERIFICAÇÃO NO BANCO](prints/image-3.png)
 
 
 👩‍💻 Autora
