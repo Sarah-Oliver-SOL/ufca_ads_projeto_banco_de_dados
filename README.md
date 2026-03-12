@@ -31,6 +31,18 @@ O projeto possui os seguintes arquivos principais:
 - [`main.py`](main.py) → execução das operações CRUD e consultas 
 - `Script do banco e dados de teste` → script SQL para criação do banco
 
+# Como configurar o banco
+A conexão com o banco PostgreSQL é configurada no arquivo `database.py`.
+
+'''python
+DB_HOST = "localhost" --> endereço do servidor do banco (localhost)
+DB_PORT = "5432" --> porta padrão do PostgreSQL (5432)
+DB_NAME = "postgres" --> banco de dados utilizado
+DB_USER = "postgres" --> usuário do PostgreSQL
+DB_PASSWORD = "postgresXXX" --> senha do PostgreSQL
+
+Caso as credenciais do PostgreSQL na máquina sejam diferentes, basta alterar os valores no arquivo `database.py`.
+
 
 # ▶️ Como executar o projeto
 ## 1. Abrir o projeto no VS Code.
@@ -82,7 +94,3 @@ Após executar o programa, os registros podem ser visualizados diretamente no Po
 
 👩‍💻 Autora
 Sarah Oliveira Lucas Diógenes
-
-
-
-
