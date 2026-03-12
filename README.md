@@ -38,7 +38,7 @@ O projeto possui os seguintes arquivos principais:
 - [text](<Script do Banco e Dados de teste>) -> script do banco de dados
 
 
-# Configuração do Banco de Dados
+## Configuração do Banco de Dados
 
 A conexão com o banco é configurada no arquivo (database.py).
 
@@ -58,6 +58,21 @@ DATABASE_URL = (
 Observação: essas credenciais podem mudar de acordo com a máquina, sendo necessário mudar os valores.
 
 # Como executar o projeto
-
-
-
+1. Abra a pasta do projeto no VS Code
+2. Verifique as configurações do banco
+3. Verificar se o banco está funcionando
+4. Criar o ambiente virtual no VS Code:
+    Abrir terminal e executar: python -m venv venv
+5. Instalar as dependências do projeto
+    Dispondo do arquivo já criado (requeriments.txt)
+    Executar: pip install -r requirements.txt
+6. Executar o sistema: python main.py
+7. Resultado da execução
+    Ao executar o programa, o sistema irá:
+        Testar a conexão com o PostgreSQL
+        Inserir usuários
+        Criar listas personalizadas
+        Executar consultas no banco
+        Exibir os resultados no terminal
+8. Verificar os dados no banco
+    Após executar o programa, os registros podem ser visualizados diretamente no PostgreSQL.
