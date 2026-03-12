@@ -1,0 +1,686 @@
+-- ==========================================================
+-- Script SQL - Catálogo de Filmes e Séries
+-- Script do Banco (DDL) e Dados de Teste (DML)
+-- Etapas anteriores
+-- Sarah Oliveira Lucas Diógenes
+-- ==========================================================
+
+-- ETAPA 1 A 4
+
+CREATE SCHEMA IF NOT EXISTS etapa3;
+SET search_path TO etapa3;
+
+-- Limpeza (para rodar várias vezes sem erro)
+DROP TABLE IF EXISTS usuario_midia CASCADE;
+DROP TABLE IF EXISTS lista_midia CASCADE;
+DROP TABLE IF EXISTS lista_personalizada CASCADE;
+DROP TABLE IF EXISTS episodio CASCADE;
+DROP TABLE IF EXISTS temporada CASCADE;
+DROP TABLE IF EXISTS serie CASCADE;
+DROP TABLE IF EXISTS midia CASCADE;
+DROP TABLE IF EXISTS usuario CASCADE;
+
+-- -----------------------------
+-- Criação do Banco de dados
+-- Tabelas
+-- -----------------------------
+
+-- 1) usuario
+CREATE TABLE IF NOT EXISTS usuario (
+    id_usuario SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL
+);
+
+-- 2) midia
+CREATE TABLE IF NOT EXISTS midia (
+    id_midia SERIAL PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    genero VARCHAR(50) NOT NULL,
+    ano INT NOT NULL,
+    duracao INT,
+    class_indicativa VARCHAR(10),
+    elenco VARCHAR(250),
+    nota_media DECIMAL
+);
+
+-- 3) serie
+CREATE TABLE IF NOT EXISTS serie (
+    id_midia INTEGER PRIMARY KEY,
+    CONSTRAINT fk_serie_midia
+        FOREIGN KEY (id_midia)
+        REFERENCES midia(id_midia)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+-- 4) temporada
+CREATE TABLE IF NOT EXISTS temporada (
+    id_temporada SERIAL PRIMARY KEY,
+    id_serie INTEGER NOT NULL,
+    numero_temporada INT NOT NULL,
+    CONSTRAINT fk_temporada_serie
+        FOREIGN KEY (id_serie)
+        REFERENCES serie(id_midia)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+-- 5) episodio
+CREATE TABLE IF NOT EXISTS episodio (
+    id_episodio SERIAL PRIMARY KEY,
+    id_temporada INTEGER NOT NULL,
+    numero_episodio INT NOT NULL,
+    titulo VARCHAR(150),
+    duracao_minutos INT,
+    data_lancamento DATE,
+    status VARCHAR(20),
+    nota DECIMAL,
+    CONSTRAINT fk_episodio_temporada
+        FOREIGN KEY (id_temporada)
+        REFERENCES temporada(id_temporada)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+-- 6) lista_personalizada
+CREATE TABLE IF NOT EXISTS lista_personalizada (
+    id_lista SERIAL PRIMARY KEY,
+    id_usuario INTEGER NOT NULL,
+    nome_lista VARCHAR(50),
+    CONSTRAINT fk_lista_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES usuario(id_usuario)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+-- 7) lista_midia
+CREATE TABLE IF NOT EXISTS lista_midia (
+    id_lista INTEGER NOT NULL,
+    id_midia INTEGER NOT NULL,
+    CONSTRAINT pk_lista_midia PRIMARY KEY (id_lista, id_midia),
+    CONSTRAINT fk_lista_midia_lista
+        FOREIGN KEY (id_lista)
+        REFERENCES lista_personalizada(id_lista)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_lista_midia_midia
+        FOREIGN KEY (id_midia)
+        REFERENCES midia(id_midia)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+-- 8) usuario_midia
+CREATE TABLE IF NOT EXISTS usuario_midia (
+    id_usuario INTEGER NOT NULL,
+    id_midia INTEGER NOT NULL,
+    status VARCHAR(20),
+    nota DECIMAL,
+    data_conclusao DATE,
+    CONSTRAINT pk_usuario_midia PRIMARY KEY (id_usuario, id_midia),
+    CONSTRAINT fk_usuario_midia_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES usuario(id_usuario)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_usuario_midia_midia
+        FOREIGN KEY (id_midia)
+        REFERENCES midia(id_midia)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+
+INSERT INTO usuario (nome) VALUES
+('Sarah Oliveira'),
+('Pablo Dev'),
+('Vinicius Tab'),
+('Saulo Eng');
+
+INSERT INTO midia
+(titulo, genero, ano, duracao, class_indicativa, elenco, nota_media)
+VALUES
+('Interestelar','Ficção Científica',2014,169,'12',
+ 'Matthew McConaughey; Anne Hathaway',9.2),
+('Parasita','Suspense',2019,132,'16',
+ 'Song Kang-ho; Cho Yeo-jeong',8.6),
+('The Office','Comédia',2005,NULL,'12',
+ 'Steve Carell; Rainn Wilson',8.9),
+('Stranger Things','Ficção',2016,NULL,'14',
+ 'Millie Bobby Brown; Finn Wolfhard',8.7),
+('Breaking Bad','Drama',2008,NULL,'16',
+ 'Bryan Cranston; Aaron Paul',9.5);
+
+INSERT INTO serie VALUES (3),(4),(5);
+
+INSERT INTO temporada (id_serie, numero_temporada) VALUES
+(3,1),(3,2),(4,1),(5,1);
+
+INSERT INTO episodio
+(id_temporada, numero_episodio, titulo, duracao_minutos,
+ data_lancamento, status, nota)
+VALUES
+(1,1,'Pilot',23,'2005-03-24','ASSISTIDO',8.0),
+(1,2,'Diversity Day',22,'2005-03-29','ASSISTIDO',8.2),
+(2,1,'The Dundies',22,'2005-09-20','ASSISTINDO',8.5),
+(3,1,'The Vanishing of Will Byers',47,'2016-07-15','ASSISTIDO',8.7),
+(4,1,'Pilot',58,'2008-01-20','NAO_INICIADO',NULL);
+
+INSERT INTO lista_personalizada (id_usuario,nome_lista) VALUES
+(1,'Favoritos'),
+(1,'Para assistir'),
+(2,'Top Séries'),
+(3,'Filmes do Ano');
+
+INSERT INTO lista_midia VALUES
+(1,1),(1,5),
+(2,2),(2,4),
+(3,3),(3,5),
+(4,2),(4,1);
+
+INSERT INTO usuario_midia VALUES
+(1,1,'CONCLUIDO',9.5,'2026-01-10'),
+(1,3,'ASSISTINDO',NULL,NULL),
+(1,2,'NAO_INICIADO',NULL,NULL),
+(2,5,'CONCLUIDO',10,'2026-01-12'),
+(3,4,'ASSISTINDO',9,NULL);
+
+-- ==========================================================
+-- CONSULTAS (SELECT)
+-- ==========================================================
+
+-- Consulta 1: Listar listas e seus respectivos usuários
+SELECT
+  lp.id_lista,
+  u.nome AS usuario,
+  lp.nome_lista
+FROM lista_personalizada lp
+JOIN usuario u
+ON u.id_usuario = lp.id_usuario;
+
+
+-- Consulta 2: Mídias presentes na lista "Favoritos" (id_lista = 1)
+SELECT
+  lp.nome_lista,
+  m.titulo,
+  m.genero,
+  m.ano
+FROM lista_midia lm
+INNER JOIN lista_personalizada lp
+  ON lp.id_lista = lm.id_lista
+INNER JOIN midia m
+  ON m.id_midia = lm.id_midia
+WHERE lp.id_lista = 1;
+
+
+-- Consulta 3: Histórico de mídias assistidas pelo usuário 1 |(Sarah)
+SELECT
+  u.nome AS usuario,
+  m.titulo AS midia,
+  um.status,
+  um.nota
+FROM usuario_midia um
+JOIN usuario u
+  ON u.id_usuario = um.id_usuario
+JOIN midia m
+  ON m.id_midia = um.id_midia
+WHERE u.id_usuario = 1;
+
+
+-- Consulta 4: Todas as mídias e o status do usuário 1 (mesmo que não tenha assistido)
+SELECT
+  m.titulo,
+  COALESCE(um.status, 'SEM REGISTRO') AS status_usuario
+FROM midia m
+LEFT JOIN usuario_midia um
+  ON m.id_midia = um.id_midia
+ AND um.id_usuario = 1;
+
+
+-- 5) Consulta 5: Quantidade de temporadas por série
+SELECT
+  m.titulo AS serie,
+  COUNT(t.id_temporada) AS qtd_temporadas
+FROM serie s
+INNER JOIN midia m
+  ON m.id_midia = s.id_midia
+INNER JOIN temporada t
+  ON t.id_serie = s.id_midia
+GROUP BY m.titulo;
+
+-- ==========================================================
+-- 1) CHECKs
+-- ==========================================================
+
+-- CHECK 1: Impedir ano inválido (ex.: 0, negativo, etc.)
+ALTER TABLE midia
+ADD CONSTRAINT ck_midia_ano_valido
+CHECK (ano >= 1900 AND ano <= EXTRACT(YEAR FROM CURRENT_DATE)::INT);
+
+-- CHECK 2: Impedir duração negativa (e permitir NULL para séries)
+ALTER TABLE midia
+ADD CONSTRAINT ck_midia_duracao_nao_negativa
+CHECK (duracao IS NULL OR duracao > 0);
+
+-- CHECK 3: Nota média da mídia deve estar entre 0 e 10 (ou ser NULL)
+ALTER TABLE midia
+ADD CONSTRAINT ck_midia_nota_media_intervalo
+CHECK (nota_media IS NULL OR (nota_media >= 0 AND nota_media <= 10));
+
+-- CHECK 4: Status do episódio permitido (evita texto aleatório)
+ALTER TABLE episodio
+ADD CONSTRAINT ck_episodio_status_permitido
+CHECK (status IN ('NAO_INICIADO', 'ASSISTINDO', 'ASSISTIDO'));
+
+-- CHECK 5: Número de temporada e episódio >= 1
+ALTER TABLE temporada
+ADD CONSTRAINT ck_temporada_numero_valido
+CHECK (numero_temporada >= 1);
+
+ALTER TABLE episodio
+ADD CONSTRAINT ck_episodio_numero_valido
+CHECK (numero_episodio >= 1);
+
+-- ==========================================================
+-- 2) UNIQUE
+-- ==========================================================
+
+-- UNIQUE: Um usuário não pode ter duas listas com o mesmo nome (evita duplicar "Favoritos" 
+-- para a mesma pessoa)
+ALTER TABLE lista_personalizada
+ADD CONSTRAINT uq_lista_usuario_nome
+UNIQUE (id_usuario, nome_lista);
+
+-- ==========================================================
+-- 3) DEFAULT
+-- ==========================================================
+
+-- DEFAULT: Se não informar status do episódio, assume NAO_INICIADO
+ALTER TABLE episodio
+ALTER COLUMN status SET DEFAULT 'NAO_INICIADO';
+
+-- DEFAULT: Se não informar status em usuario_midia, assume NAO_INICIADO
+ALTER TABLE usuario_midia
+ALTER COLUMN status SET DEFAULT 'NAO_INICIADO';
+
+-- ==========================================================
+-- 4) Regras ON DELETE / ON UPDATE
+-- ==========================================================
+
+-- (FK 1) lista_personalizada -> usuario
+-- RESTRICT (não permitir apagar usuário se ainda tiver listas)
+-- A chave estrangeira entre lista_personalizada e usuario é recriada com 
+-- ON DELETE RESTRICT, impedindo a exclusão de usuários que ainda possuem listas cadastradas. 
+-- Isso evita perda acidental de dados e mantém a integridade referencial do sistema. 
+-- O uso de ON UPDATE CASCADE garante que eventuais alterações no identificador do usuário sejam 
+-- propagadas automaticamente para as listas associadas.
+ALTER TABLE lista_personalizada
+DROP CONSTRAINT fk_lista_usuario;
+
+ALTER TABLE lista_personalizada
+ADD CONSTRAINT fk_lista_usuario
+FOREIGN KEY (id_usuario)
+REFERENCES usuario(id_usuario)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+-- (FK 2) usuario_midia -> usuario
+-- UPDATE CASCADE: se o id_usuario mudar na tabela usuario, é atualizado em usuario_midia, 
+-- preservando a integridade referencial.
+-- DELETE CASCADE: se apagar o usuario, apaga-se automaticamente o histórico dele. 
+-- Ou seja, evita-se registros órfãos
+ALTER TABLE usuario_midia
+DROP CONSTRAINT fk_usuario_midia_usuario;
+
+ALTER TABLE usuario_midia
+ADD CONSTRAINT fk_usuario_midia_usuario
+FOREIGN KEY (id_usuario)
+REFERENCES usuario(id_usuario)
+ON UPDATE CASCADE
+ON DELETE CASCADE;
+
+-- ==============================================================
+-- ETAPA 5 - PROJETO FINAL- Mecanismos avançados do PostgreSQL 
+-- Views, View Materializada, Triggers e Procedure
+-- ==============================================================
+
+-- ==========================================================
+-- VIEW (vw)
+-- ==========================================================
+-- Busca facilitar uma consulta muito frequente do sistema:"histórico do usuário"
+-- com dados da mídia (JOIN entre usuario_midia + usuario + midia).
+-- Assim o sistema consulta a VIEW em vez de repetir SELECT com JOIN toda hora.
+-- Obs: Uso do "OR REPLACE", para que caso a função exista, seja substituída pela nova.
+CREATE OR REPLACE VIEW vw_historico_usuario AS
+SELECT
+    u.id_usuario,
+    u.nome AS usuario,
+    m.id_midia,
+    m.titulo,
+    m.genero,
+    m.ano,
+    um.status,
+    um.nota AS nota_usuario,
+    um.data_conclusao
+FROM usuario_midia um
+INNER JOIN usuario u
+    ON u.id_usuario = um.id_usuario
+INNER JOIN midia m
+    ON m.id_midia = um.id_midia;
+
+
+-- ==========================================================
+-- VIEW MATERIALIZADA (mv)
+-- ==========================================================
+-- Gera um relatório agregado por gênero, evitando recalcular contagens e médias repetidamente.
+DROP MATERIALIZED VIEW IF EXISTS mv_relatorio_genero;
+
+CREATE MATERIALIZED VIEW mv_relatorio_genero AS
+SELECT
+    m.genero,
+    COUNT(DISTINCT m.id_midia) AS total_midias,
+    AVG(m.nota_media)          AS media_nota_catalogo,
+    AVG(um.nota)               AS media_nota_usuarios,
+    COUNT(um.id_usuario)       AS total_avaliacoes
+FROM midia m
+LEFT JOIN usuario_midia um
+    ON um.id_midia = m.id_midia
+GROUP BY m.genero;
+
+-- Índice simples para consultas rápidas por gênero na MV
+CREATE INDEX IF NOT EXISTS idx_mv_relatorio_genero_genero
+ON mv_relatorio_genero (genero);
+
+
+-- ==========================================================
+-- TRIGGERS
+-- ==========================================================
+
+-- ----------------------------------------------------------
+-- Trigger BEFORE (em usuario_midia)
+-- ----------------------------------------------------------
+-- Faz a validação/ajuste antes de inserir/atualizar.
+-- Regras simples e coerentes:
+-- 1) padroniza status para MAIÚSCULO
+-- 2) impede status inválido
+-- 3) valida nota (0 a 10) quando preenchida
+-- 4) se status for CONCLUIDO e data_conclusao vier NULL, define automaticamente com a data atual (CURRENT DATE)
+CREATE OR REPLACE FUNCTION fn_usuario_midia_before_validar()
+RETURNS trigger
+
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Padronização do status
+    IF NEW.status IS NOT NULL THEN
+        NEW.status := upper(NEW.status);
+    END IF;
+
+    -- Validação do status permitido
+    IF NEW.status IS NOT NULL AND NEW.status NOT IN
+        ('NAO_INICIADO', 'ASSISTINDO', 'ASSISTIDO', 'CONCLUIDO')
+    THEN
+        RAISE EXCEPTION 'Status inválido em usuario_midia: %', NEW.status;
+    END IF;
+
+    -- Validação da nota de usuário (se preenchida)
+    IF NEW.nota IS NOT NULL AND (NEW.nota < 0 OR NEW.nota > 10) THEN
+        RAISE EXCEPTION 'Nota inválida em usuario_midia (0 a 10): %', NEW.nota;
+    END IF;
+
+    -- Auto-preenchimento da data de conclusão, quando necessário
+    IF NEW.status = 'CONCLUIDO' AND NEW.data_conclusao IS NULL THEN
+        NEW.data_conclusao := CURRENT_DATE;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_usuario_midia_before_validar ON usuario_midia;
+
+CREATE TRIGGER trg_usuario_midia_before_validar
+BEFORE INSERT OR UPDATE ON usuario_midia
+FOR EACH ROW
+EXECUTE FUNCTION fn_usuario_midia_before_validar();
+
+
+-- ----------------------------------------------------------
+-- Trigger AFTER (log de ações em usuario_midia)
+-- ----------------------------------------------------------
+-- Busca registrar log simples após inserções no histórico do usuário.
+-- Por exemplo, toda vez que o usuário adicionar uma mídia, cria um registro no log.
+CREATE TABLE IF NOT EXISTS log_usuario_midia (
+    id_log SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_midia INT NOT NULL,
+    acao VARCHAR(20) NOT NULL,
+    status VARCHAR(20),
+    data_evento TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE OR REPLACE FUNCTION fn_usuario_midia_after_log()
+RETURNS trigger
+
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO log_usuario_midia (id_usuario, id_midia, acao, status)
+    VALUES (NEW.id_usuario, NEW.id_midia, 'INSERT', NEW.status);
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_usuario_midia_after_log ON usuario_midia;
+
+CREATE TRIGGER trg_usuario_midia_after_log
+AFTER INSERT ON usuario_midia
+FOR EACH ROW
+EXECUTE FUNCTION fn_usuario_midia_after_log();
+
+
+-- ==========================================================
+-- PROCEDURE
+-- ==========================================================
+-- Rotina administrativa para manutenção.
+-- Recalcula nota_media da tabela midia com base nas notas dadas pelos usuários.
+CREATE OR REPLACE PROCEDURE sp_recalcular_nota_media_midias()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE midia m
+    SET nota_media = sub.media_calc
+    FROM (
+        SELECT id_midia, ROUND(AVG(nota)::numeric, 1) AS media_calc
+        FROM usuario_midia
+        WHERE nota IS NOT NULL
+        GROUP BY id_midia
+    ) sub
+    WHERE m.id_midia = sub.id_midia;
+
+ -- Se uma mídia não tiver notas em usuario_midia, a nota_media fica como está (ou vazia).
+END;
+$$;
+
+-- ==========================================================
+-- ÁREA DE TESTES DA ETAPA 5
+-- ==========================================================
+
+-- 1) TESTE DA VIEW  (VW)
+-- Listar histórico do usuário com dados de mídia:
+SELECT * FROM vw_historico_usuario
+ORDER BY id_usuario, id_midia;
+
+-- 2) TESTE DA VIEW MATERIALIZADA (MV)
+-- Exibição do relatório por gênero
+SELECT * FROM mv_relatorio_genero
+ORDER BY total_midias DESC, genero;
+
+-- Alteração da nota de usuário, isso mudará a média
+UPDATE usuario_midia
+SET nota = 7
+WHERE id_usuario = 1 AND id_midia = 1;
+
+REFRESH MATERIALIZED VIEW mv_relatorio_genero;
+
+SELECT * FROM mv_relatorio_genero
+ORDER BY total_midias DESC, genero;
+
+-- 3) TESTE DE TRIGGER BEFORE
+-- Teste de padronização e autopreenchimento
+-- Inserir com 'concluido' (minúsculo) e data vazia, então deverá gravar status como 'CONCLUIDO'
+-- e preencher data_conclusao automaticamente com a data de hoje
+INSERT INTO usuario_midia (id_usuario, id_midia, status, nota, data_conclusao)
+VALUES (2, 2, 'concluido', 8, NULL);
+
+SELECT *
+FROM usuario_midia
+WHERE id_usuario = 2 AND id_midia = 2;
+
+-- Testando uma nota inválida
+INSERT INTO usuario_midia (id_usuario, id_midia, status, nota, data_conclusao)
+VALUES (3, 2, 'ASSISTINDO', 15, NULL);
+
+-- Testando um status inválido
+INSERT INTO usuario_midia (id_usuario, id_midia, status, nota, data_conclusao)
+VALUES (3, 1, 'QUALQUER_COISA', 8, NULL);
+
+-- 4) TESTE DE TRIGGER AFTER
+-- Visualizando a data de conclusão que foi preenchida automaticamente e status de Concluído
+-- da inserção no before
+SELECT *
+FROM log_usuario_midia
+ORDER BY data_evento DESC;
+
+-- 5) TESTE DA PROCEDURE
+-- Alterando uma nota de usuário para provocar mudança na média
+UPDATE usuario_midia
+SET nota = 6
+WHERE id_usuario = 2 AND id_midia = 5;
+
+-- Executando o procedure, pois não atualiza automaticamente
+CALL sp_recalcular_nota_media_midias();
+
+-- Conferindo se nota_media foi recalculada
+SELECT id_midia, titulo, nota_media
+FROM midia
+ORDER BY id_midia;
+
+-- Atualizar VIEW MATERIALIZADA após o recalculo da média
+REFRESH MATERIALIZED VIEW mv_relatorio_genero;
+
+-- Conferência final
+SELECT * FROM mv_relatorio_genero
+ORDER BY total_midias DESC, genero;
+
+-- ==========================================================
+-- ETAPA 6 - ANÁLISE E OTIMIZAÇÃO DE CONSULTAS
+-- Uso de EXPLAIN ANALYZE
+-- ==========================================================
+
+-- Atualiza estatísticas para o otimizador do PostgreSQL
+ANALYZE;
+
+-- ==========================================================
+-- CONSULTA 1
+-- Filtro com WHERE em usuario_midia
+-- ==========================================================
+
+-- Antes da otimização
+EXPLAIN ANALYZE
+SELECT
+    id_usuario,
+    id_midia,
+    status,
+    nota
+FROM usuario_midia
+WHERE id_usuario = 1
+  AND status = 'CONCLUIDO';
+
+-- Otimização aplicada:
+-- criação de índice composto nas colunas usadas no filtro
+CREATE INDEX IF NOT EXISTS idx_usuario_midia_usuario_status
+ON usuario_midia (id_usuario, status);
+
+-- Depois da otimização
+EXPLAIN ANALYZE
+SELECT
+    id_usuario,
+    id_midia,
+    status,
+    nota
+FROM usuario_midia
+WHERE id_usuario = 1
+  AND status = 'CONCLUIDO';
+
+-- ==========================================================
+-- CONSULTA 2
+-- Filtro + ORDER BY em usuario_midia
+-- ==========================================================
+
+-- Antes da otimização
+EXPLAIN ANALYZE
+SELECT
+    id_usuario,
+    id_midia,
+    status,
+    nota,
+    data_conclusao
+FROM usuario_midia
+WHERE status = 'CONCLUIDO'
+ORDER BY data_conclusao DESC;
+
+-- Otimização aplicada:
+-- índice composto para filtro e ordenação
+CREATE INDEX IF NOT EXISTS idx_usuario_midia_status_data
+ON usuario_midia (status, data_conclusao DESC);
+
+-- Depois da otimização
+EXPLAIN ANALYZE
+SELECT
+    id_usuario,
+    id_midia,
+    status,
+    nota,
+    data_conclusao
+FROM usuario_midia
+WHERE status = 'CONCLUIDO'
+ORDER BY data_conclusao DESC;
+
+
+-- ==========================================================
+-- CONSULTA 3
+-- JOIN + GROUP BY
+-- ==========================================================
+
+-- Antes da otimização
+EXPLAIN ANALYZE
+SELECT
+    m.titulo AS serie,
+    COUNT(t.id_temporada) AS qtd_temporadas
+FROM serie s
+INNER JOIN midia m
+    ON m.id_midia = s.id_midia
+INNER JOIN temporada t
+    ON t.id_serie = s.id_midia
+GROUP BY m.titulo;
+
+-- Otimização aplicada:
+-- índice na chave estrangeira usada no JOIN
+CREATE INDEX IF NOT EXISTS idx_temporada_id_serie
+ON temporada (id_serie);
+
+-- Depois da otimização
+EXPLAIN ANALYZE
+SELECT
+    m.titulo AS serie,
+    COUNT(t.id_temporada) AS qtd_temporadas
+FROM serie s
+INNER JOIN midia m
+    ON m.id_midia = s.id_midia
+INNER JOIN temporada t
+    ON t.id_serie = s.id_midia
+GROUP BY m.titulo;
+
