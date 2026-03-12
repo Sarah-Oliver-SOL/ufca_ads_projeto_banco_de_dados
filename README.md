@@ -35,7 +35,7 @@ O projeto possui os seguintes arquivos principais:
 # ▶️ Como executar o projeto
 ## 1. Abrir o projeto no VS Code.
 
-![AbrirProjeto](image8.png)
+![Abrir Projeto VS](<prints/Projeto no VSCode.png>)
 
 ## 2. Verificar configuração do banco
 
